@@ -32,9 +32,10 @@ func main() {
 	var addr = flag.String("addr", ":8080", "The addr of the application.")
 	flag.Parse()
 
-	gomniauth.SetSecurityKey("xxxxx")
+	gomniauth.SetSecurityKey("potatosaladnovember")
 	gomniauth.WithProviders(
-		soundcloud.New("id", "secret", "callback"),
+		// CHANGE THESE!
+		soundcloud.New("clientid", "secret", "callbackurl"),
 	)
 
 	r := newRoom()
