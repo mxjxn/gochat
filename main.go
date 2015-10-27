@@ -42,7 +42,7 @@ func main() {
 	var addr = flag.String("addr", ":8080", "The addr of the application.")
 	flag.Parse()
 
-	gomniauth.SetSecurityKey("potatosaladnovember")
+	gomniauth.SetSecurityKey(os.Getenv("GOCHAT_SEC_KEY"))
 	gomniauth.WithProviders(
 		soundcloud.New(os.Getenv("ENV_SC_CLIENT_ID"), os.Getenv("ENV_SC_SECRET"), os.Getenv("ENV_SC_CALLBACK_URL")),
 		github.New(os.Getenv("ENV_GH_CLIENT_ID"), os.Getenv("ENV_GH_SECRET"), os.Getenv("ENV_GH_CALLBACK_URL")),
