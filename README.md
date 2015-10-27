@@ -1,5 +1,6 @@
-# goplay
+# gochat
 Basic chat service built in Go
+Eventually to become a collaborative music platform 
 
 ## active:
 - public chat window
