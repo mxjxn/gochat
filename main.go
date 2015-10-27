@@ -4,7 +4,9 @@ import (
 	"flag"
 	"github.com/mxjxn/gochat/trace"
 	"github.com/stretchr/gomniauth"
+	"github.com/stretchr/gomniauth/providers/github"
 	"github.com/stretchr/gomniauth/providers/soundcloud"
+	"github.com/stretchr/objx"
 	"log"
 	"net/http"
 	"os"
@@ -24,7 +26,15 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 
 	})
-	t.templ.Execute(w, r)
+
+	data := map[string]interface{}{
+		"Host": r.Host,
+	}
+	if authCookie, err := r.Cookie("auth"); err == nil {
+		data["UserData"] = objx.MustFromBase64(authCookie.Value)
+	}
+
+	t.templ.Execute(w, data)
 }
 
 func main() {
@@ -34,8 +44,8 @@ func main() {
 
 	gomniauth.SetSecurityKey("potatosaladnovember")
 	gomniauth.WithProviders(
-		// CHANGE THESE!
-		soundcloud.New("clientid", "secret", "callbackurl"),
+		soundcloud.New(os.Getenv("ENV_SC_CLIENT_ID"), os.Getenv("ENV_SC_SECRET"), os.Getenv("ENV_SC_CALLBACK_URL")),
+		github.New(os.Getenv("ENV_GH_CLIENT_ID"), os.Getenv("ENV_GH_SECRET"), os.Getenv("ENV_GH_CALLBACK_URL")),
 	)
 
 	r := newRoom()

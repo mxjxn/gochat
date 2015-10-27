@@ -3,13 +3,14 @@ package main
 import (
 	"github.com/gorilla/websocket"
 	"github.com/mxjxn/gochat/trace"
+	"github.com/stretchr/objx"
 	"log"
 	"net/http"
 )
 
 type room struct {
 	// messages to be sent to all clients
-	forward chan []byte
+	forward chan *message
 	// join is a channel for clients joining
 	join chan *client
 	// leave is a channel for clients leaving
@@ -17,9 +18,17 @@ type room struct {
 	//clients is a map holding all the clients currently in the room
 	clients map[*client]bool
 
+	// activedj *client
+	// queue is the line for playing music
+	//queue map[*client] urlFormat for youtube or soundcloud
+
 	// tracer will print room events to console
 	tracer trace.Tracer
 }
+
+//func (r *room) sendMsg() {
+
+//}
 
 func (r *room) run() {
 	for {
@@ -34,18 +43,20 @@ func (r *room) run() {
 			close(client.send)
 			r.tracer.Trace("Client Left")
 		case msg := <-r.forward:
-			r.tracer.Trace("Message Recieved: ", string(msg))
+			r.tracer.Trace("Message Recieved: ", msg.Message)
 			for client := range r.clients {
-				select {
-				case client.send <- msg:
-					//send the message
-					r.tracer.Trace(" -- sent to client")
-				default:
-					//failed to send
-					delete(r.clients, client)
-					close(client.send)
-					r.tracer.Trace(" -- failed to send, cleaned up client")
+				if client.userData["name"] != msg.Name {
+					select {
+					case client.send <- msg:
+						//send the message
+						r.tracer.Trace(" -- sent to client")
+					default:
+						//failed to send
+						delete(r.clients, client)
+						close(client.send)
+						r.tracer.Trace(" -- failed to send, cleaned up client")
 
+					}
 				}
 			}
 		}
@@ -54,7 +65,7 @@ func (r *room) run() {
 
 func newRoom() *room {
 	return &room{
-		forward: make(chan []byte),
+		forward: make(chan *message),
 		join:    make(chan *client),
 		leave:   make(chan *client),
 		clients: make(map[*client]bool),
@@ -75,10 +86,17 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		log.Fatal("ServeHTTP:", err)
 		return
 	}
+	authCookie, err := req.Cookie("auth")
+	if err != nil {
+		log.Fatal("Failed to get auth cookie:", err)
+		// should redirect to login
+		return
+	}
 	client := &client{
-		socket: socket,
-		send:   make(chan []byte, messageBufferSize),
-		room:   r,
+		socket:   socket,
+		send:     make(chan *message, messageBufferSize),
+		room:     r,
+		userData: objx.MustFromBase64(authCookie.Value),
 	}
 	r.join <- client
 	defer func() { r.leave <- client }()

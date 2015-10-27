@@ -33,24 +33,31 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	provider := segs[3]
 	switch action {
 	case "callback":
-		provider, err := gomniauth.Provider(provider)
-		log.Println("callback!")
+		providerobj, err := gomniauth.Provider(provider)
+		log.Println("providerobj: ", providerobj)
 		if err != nil {
 			log.Fatalln("Error when trying to get provider", provider, "-", err)
 		}
+
 		omap, err := objx.FromURLQuery(r.URL.RawQuery)
+		log.Println(omap)
 		if err != nil {
 			log.Fatalln("Error when trying to get object from query", provider, "-", err)
 		}
-		creds, err := provider.CompleteAuth(omap)
+
+		creds, err := providerobj.CompleteAuth(omap)
+		log.Println("creds: ", creds, err)
 		if err != nil {
 			log.Fatalln("Error when trying to complete auth for", provider, "-", err)
 		}
-		user, err := provider.GetUser(creds)
 
+		log.Println("retrieving user")
+		user, err := providerobj.GetUser(creds)
+		log.Println("user: ", user)
 		if err != nil {
 			log.Fatalln("Error when trying to get user from", provider, "-", err)
 		}
+
 		authCookieValue := objx.New(map[string]interface{}{
 			"name": user.Name(),
 		}).MustBase64()
@@ -61,11 +68,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header()["Location"] = []string{"/chat"}
 		w.WriteHeader(http.StatusTemporaryRedirect)
 	case "login":
-		provider, err := gomniauth.Provider(provider)
+		providerobj, err := gomniauth.Provider(provider)
 		if err != nil {
 			log.Fatalln("Error when trying to get the provider", provider, "-", err)
 		}
-		loginUrl, err := provider.GetBeginAuthURL(nil, nil)
+		loginUrl, err := providerobj.GetBeginAuthURL(nil, nil)
 		if err != nil {
 			log.Fatalln("error when trying to GetBeginAuthURL for", provider, "-", err)
 		}
