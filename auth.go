@@ -90,7 +90,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 		Name:   "auth",
 		Value:  "",
 		Path:   "/",
-		MaxAge: "-1",
+		MaxAge: -1,
 	})
 	w.Header()["Location"] = []string{"/chat"}
 	w.WriteHeader(http.StatusTemporaryRedirect)
