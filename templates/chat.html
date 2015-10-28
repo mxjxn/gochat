@@ -10,12 +10,18 @@
     </style>
 </head>
 <body>
+
+
     <ul id="messages"></ul>
+
     <form id="chatbox" action="">
+
 	    {{ .UserData.name }}:<br/>
-        <textarea id="" name="" cols="30" rows="10"></textarea>
+        <textarea id="" name="" cols="3" rows="20"></textarea>
         <input type="submit" value="Send" />
+
     </form>
+
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script>
@@ -24,19 +30,19 @@
             var msgBox = $("#chatbox textarea");
             var messages = $("#messages");
             $("#chatbox").submit(function(){
-		    var msgTxt = msgBox.val()
+                var msgTxt = msgBox.val()
                 if(!msgTxt) return false;
                 if(!socket) {
                     alert("error, there is no socket connection");
                     return false;
                 }
-		socket.send(JSON.stringify({"Message":msgTxt}));
-		messages.append(
-			$("<li>").append(
-				$("<strong>").text("{{.UserData.name}} : "),
-				$("<span>").text(msgTxt)
-			)
-		)
+                socket.send(JSON.stringify({"Message":msgTxt}));
+                messages.append(
+                    $("<li>").append(
+                        $("<strong>").text("{{.UserData.name}}: "),
+                        $("<span>").text(msgTxt)
+                    )
+                )
                 msgBox.val("");
                 return false;
             });
