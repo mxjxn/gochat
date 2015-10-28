@@ -54,13 +54,17 @@
                     alert("connection has been closed");
                 }
                 socket.onmessage = function(e) {
-		    var msg = eval("("+e.data+")");
+                    var msg = eval("("+e.data+")");
                     messages.append(
-			$("<li>").append(
-				$("<strong>").text(msg.Name + ": "),
-				$("<span>").text(msg.Message)
-			)
-		   );
+                        $("<li>").append(
+                            $("<img>").css({
+                                width:50,
+                                verticalAlign:"middle
+                            }).attr("src", msg.AvatarURL),
+                            $("<strong>").text(msg.Name + ": "),
+                            $("<span>").text(msg.Message)
+                        )
+                    );
                 }
             }
         });
