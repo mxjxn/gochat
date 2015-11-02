@@ -48,7 +48,7 @@ func main() {
 		github.New(os.Getenv("ENV_GH_CLIENT_ID"), os.Getenv("ENV_GH_SECRET"), os.Getenv("ENV_GH_CALLBACK_URL")),
 	)
 
-	r := newRoom()
+	r := newRoom(UseGravatar)
 	r.tracer = trace.New(os.Stdout)
 
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))

@@ -17,10 +17,12 @@ type room struct {
 	leave chan *client
 	//clients is a map holding all the clients currently in the room
 	clients map[*client]bool
+	// avatar is how avatar info will be obtained
+	avatar Avatar
 
-	// activedj *client
-	// queue is the line for playing music
-	//queue map[*client] urlFormat for youtube or soundcloud
+	//djqueue []*client
+
+	//activedj *DJ
 
 	// tracer will print room events to console
 	tracer trace.Tracer
@@ -63,13 +65,14 @@ func (r *room) run() {
 	}
 }
 
-func newRoom() *room {
+func newRoom(avatar Avatar) *room {
 	return &room{
 		forward: make(chan *message),
 		join:    make(chan *client),
 		leave:   make(chan *client),
 		clients: make(map[*client]bool),
 		tracer:  trace.Off(),
+		avatar:  avatar,
 	}
 }
 

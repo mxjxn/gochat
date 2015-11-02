@@ -6,7 +6,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <style>
         input {display:block}
-        ul {list-style: none}
+        ul#messages {list-style: none; }
+        ul#messages li {margin-bottom:5px; }
     </style>
 </head>
 <body>
@@ -24,6 +25,7 @@ userData.avatarURL = "{{.UserData.avatar_url}}";
 	    {{ .UserData.name }}:<br/>
         <textarea id="" name="" cols="40" rows="1"></textarea>
         <input type="submit" value="Send" />
+        or <a href="/logout">log out</a>
 
     </form>
 
