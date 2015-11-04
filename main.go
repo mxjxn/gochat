@@ -58,6 +58,11 @@ func main() {
 	http.Handle("/room", r)
 	http.Handle("/upload", &templateHandler{filename: "upload.html"})
 	http.HandleFunc("/uploader", uploaderHandler)
+
+	http.Handle("/avatars/",
+		http.StripPrefix("/avatars/",
+			http.FileServer(http.Dir("./avatars/"))))
+
 	go r.run()
 
 	log.Println("Starting web server on ", *addr)
