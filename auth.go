@@ -1,9 +1,11 @@
 package main
 
 import (
+	"crypto/md5"
 	"fmt"
 	"github.com/stretchr/gomniauth"
 	"github.com/stretchr/objx"
+	"io"
 	"log"
 	"net/http"
 	"strings"
